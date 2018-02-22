@@ -7,20 +7,49 @@
 # WARNING! All changes made in this file will be lost!
 
 import sys
-import Tkinter
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-class FlappyBruinGame(QtWidgets.QWidget):
+class Bruin(object):
+    def __init__(self):
+        self.reset()
+    
+    def reset(self):
+        self.x, self.y = 150, 350
+        self.vx, self.vy = 0,0
+        self.ay = -9.81
+        self.dead = False
+    
+    def setPos(self,x,y):
+        self.x, self.y = x,y
+        
+    def jump(self):
+        self.vy = 50
+    
+    def update(self):
+        if self.y < 1:
+            self.y = 0
+            if self.vy < 0:
+                self.vy = 0
+            self.dead = True
+        if self.y > 650:
+            self.dead = True
+        self.vy += self.ay / 7.5
+        self.x += self.vx / 7.5
+        self.y += self.vy / 7.5
+
+class FlappyBruinGame(QtWidgets.QMainWindow):
     def __init__(self):
         super(FlappyBruinGame, self).__init__()
-        self.setupUi(QtWidgets.QMainWindow())
+        self.player = Bruin()
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.animate)
+        self.setupUi(self)
     
     def setupUi(self, MainWindow):
-        self.window = MainWindow
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(990, 706)
         MainWindow.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -28,6 +57,7 @@ class FlappyBruinGame(QtWidgets.QWidget):
         self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame.setObjectName("frame")
+        self.frame.setStyleSheet("background-color:yellow;")
         self.label = QtWidgets.QLabel(self.frame)
         self.label.setGeometry(QtCore.QRect(0, 0, 101, 41))
         font = QtGui.QFont()
@@ -75,23 +105,63 @@ class FlappyBruinGame(QtWidgets.QWidget):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Flappy Bruin"))
         self.label.setText(_translate("MainWindow", "Score:"))
         self.label_2.setText(_translate("MainWindow", "0"))
         self.label_3.setText(_translate("MainWindow", "FlappyBruin"))
         self.newButton.setText(_translate("MainWindow", "New Game"))
         self.quitButton.setText(_translate("MainWindow", "Quit Game"))
+        self.newButton.clicked.connect(self.gameStart)
         self.quitButton.clicked.connect(self.quitgame)
+        self.frame.paintEvent = self.framePaint
+
+    def gameStart(self):
+        self.label_3.hide()
+        self.label_2.setText("0")
+        self.timer.start(10)
+    
+    def gameEnd(self):
+        self.timer.stop()
+        self.label_3.setText("Game Over")
+        self.label_3.show()
+        self.player.reset()
+
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_W:
+            self.incrementScore()
+            self.player.jump()
+        if event.key() == QtCore.Qt.Key_O:
+            self.gameEnd()
+            
+    def framePaint(self, event):
+        painter = QtGui.QPainter(self.frame)
+        painter.fillRect(self.player.x + 1, 600 - self.player.y, 20, 20, QtCore.Qt.blue)
+
+    def incrementScore(self):
+        i = int(self.label_2.text())
+        i = i + 1
+        self.label_2.setText(str(i))
 
     def quitgame(self):
-        self.window.close()
+        self.timer.stop()
+        self.close()
+    
+    def animate(self):
+        self.player.update()
+        self.frame.update()
+        if self.player.dead:
+            self.gameEnd()
 
 def main():
-    app = QtWidgets.QApplication(sys.argv)
+    app = QtWidgets.QApplication.instance()
+    if not app:
+        app = QtWidgets.QApplication(sys.argv)
     ui = FlappyBruinGame()
-    ui.window.show()
+    ui.show()
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
     main()
 
+#%%
+QtCore.Qt.blue
