@@ -14,7 +14,7 @@ class Bruin(object):
         self.reset()
     
     def reset(self):
-        self.x, self.y = 150, 350
+        self.x, self.y = 150, 400
         self.vx, self.vy = 0,0
         self.ay = -9.81
         self.dead = False
@@ -26,16 +26,19 @@ class Bruin(object):
         self.vy = 50
     
     def update(self):
-        if self.y < 1:
+        if self.y < 100:
             self.y = 0
             if self.vy < 0:
                 self.vy = 0
             self.dead = True
-        if self.y > 650:
+        if self.y > 706:
             self.dead = True
         self.vy += self.ay / 7.5
         self.x += self.vx / 7.5
         self.y += self.vy / 7.5
+    
+    def paintBruin(self,painter):
+        painter.fillRect(self.x + 1, 706 - self.y, 20, 20, QtCore.Qt.blue)
 
 class FlappyBruinGame(QtWidgets.QMainWindow):
     def __init__(self):
@@ -59,14 +62,14 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.frame.setObjectName("frame")
         self.frame.setStyleSheet("background-color:yellow;")
         self.label = QtWidgets.QLabel(self.frame)
-        self.label.setGeometry(QtCore.QRect(0, 0, 101, 41))
+        self.label.setGeometry(QtCore.QRect(800, 0, 101, 41))
         font = QtGui.QFont()
         font.setFamily("Gill Sans MT")
         font.setPointSize(28)
         self.label.setFont(font)
         self.label.setObjectName("label")
         self.label_2 = QtWidgets.QLabel(self.frame)
-        self.label_2.setGeometry(QtCore.QRect(100, 0, 71, 41))
+        self.label_2.setGeometry(QtCore.QRect(900, 0, 71, 41))
         font = QtGui.QFont()
         font.setFamily("Agency FB")
         font.setPointSize(28)
@@ -130,13 +133,11 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         if event.key() == QtCore.Qt.Key_W:
             self.incrementScore()
             self.player.jump()
-        if event.key() == QtCore.Qt.Key_O:
-            self.gameEnd()
             
     def framePaint(self, event):
         painter = QtGui.QPainter(self.frame)
-        painter.fillRect(self.player.x + 1, 600 - self.player.y, 20, 20, QtCore.Qt.blue)
-
+        self.player.paintBruin(painter)
+    
     def incrementScore(self):
         i = int(self.label_2.text())
         i = i + 1
