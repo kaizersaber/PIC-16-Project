@@ -40,10 +40,28 @@ class Bruin(object):
     def paintBruin(self,painter):
         painter.fillRect(self.x + 1, 706 - self.y, 20, 20, QtCore.Qt.blue)
 
+class Building(object):
+    def __init__(self, start_x=990, start_y=200):
+        self.start_x = start_x
+        self.x = start_x
+        self.y = start_y
+        self.v_x = -2.0
+        self.v_y = 0.0
+    
+    def update(self):
+        self.x += self.v_x
+        if self.x < -200:
+            self.x = self.start_x
+    
+    def paintBuilding(self, painter):
+        #gapHeight = randint()
+        painter.fillRect(self.x, self.y, 200, 506, QtCore.Qt.red)
+        
 class FlappyBruinGame(QtWidgets.QMainWindow):
     def __init__(self):
         super(FlappyBruinGame, self).__init__()
         self.player = Bruin()
+        self.building = Building()
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.animate)
         self.setupUi(self)
@@ -137,6 +155,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
     def framePaint(self, event):
         painter = QtGui.QPainter(self.frame)
         self.player.paintBruin(painter)
+        self.building.paintBuilding(painter)
     
     def incrementScore(self):
         i = int(self.label_2.text())
@@ -149,6 +168,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
     
     def animate(self):
         self.player.update()
+        self.building.update()
         self.frame.update()
         if self.player.dead:
             self.gameEnd()
