@@ -15,7 +15,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
     def __init__(self):
         super(FlappyBruinGame, self).__init__()
         self.player = Bruin()
-        self.building = Building()
+        self.buildings = [Building(1000+x*300) for x in range(4)]
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.animate)
         self.active = False
@@ -93,9 +93,9 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.frame.paintEvent = self.framePaint
-        print self.frame.sizeHint()
-        self.height, self.width = self.frame.geometry().height(), self.frame.geometry().width()
-        self.player.setBounds(self.height, self.width)
+ #     print self.frame.sizeHint()
+   #     self.height, self.width = self.frame.geometry().height(), self.frame.geometry().width()
+   #     self.player.setBounds(self.height, self.width)
         
         spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_2.addItem(spacerItem1)
@@ -179,6 +179,8 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         mode = self.comboBox.currentText()
         self.focus = True
         self.player.setDiff(mode)
+        for b in self.buildings:
+            b.setDiff(mode)
     
     def displayRules(self):
         self.label.setText("Press W to jump")
@@ -199,6 +201,8 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.toolButton_2.setText("Restart")
         self.active = False
         self.player.reset()
+        for b in self.buildings:
+            b.resetPos()
 
     def keyPressEvent(self, event):
         if self.active:
@@ -214,7 +218,9 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
             self.focus = True
         if self.active:
             self.player.paintBruin(painter)
-            self.building.paintBuilding(painter)
+            for b in self.buildings:
+                b.paintBuilding(painter)
+            
     
     def eventFilter(self,source,event):
         if event.type() == QtCore.QEvent.HoverMove:
@@ -236,9 +242,10 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.close()
     
     def animate(self):
-        self.player.update()
+        self.player.update(self.buildings)
         self.frame.update()
-        self.building.update()
+        for b in self.buildings:
+            b.update()
         if self.player.dead:
             self.gameEnd()
 
