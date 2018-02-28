@@ -83,20 +83,25 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.label_2.setObjectName("label_2")
         self.horizontalLayout.addWidget(self.label_2)
         
-        # Center Frame
         self.verticalLayout.addWidget(self.widget_2)
-        self.widget_3 = QtWidgets.QWidget(self.widget)
-        self.widget_3.setObjectName("widget_3")
-        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.widget_3)
+        
+        # Center Frame
+        self.frame = QtWidgets.QFrame(self.widget)
+        self.frame.setObjectName("frame")
+        self.frame.setStyleSheet("QWidget#frame {border:5px solid rgb(0, 0, 0)}")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.frame)
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.widget_3.paintEvent = self.framePaint
+        self.frame.paintEvent = self.framePaint
+        print self.frame.sizeHint()
+        self.height, self.width = self.frame.geometry().height(), self.frame.geometry().width()
+        self.player.setBounds(self.height, self.width)
         
         spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_2.addItem(spacerItem1)
         
         # Center Text
-        self.label = QtWidgets.QLabel(self.widget_3)
+        self.label = QtWidgets.QLabel(self.frame)
         self.label.setText("FlappyBruin")
         self.label.setStyleSheet("font: 56pt \"Britannic Bold\";")
         self.label.setAlignment(QtCore.Qt.AlignCenter)
@@ -104,7 +109,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.verticalLayout_2.addWidget(self.label)
         
         # Start Game Button
-        self.toolButton_2 = QtWidgets.QToolButton(self.widget_3)
+        self.toolButton_2 = QtWidgets.QToolButton(self.frame)
         self.toolButton_2.setText("Start Game")
         self.toolButton_2.setStyleSheet("background-color: rgb(0, 255, 255);\n"
 "font: 75 16pt \"Calisto MT\";")
@@ -114,7 +119,8 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         
         spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_2.addItem(spacerItem2)
-        self.verticalLayout.addWidget(self.widget_3)
+        
+        self.verticalLayout.addWidget(self.frame)
         
         # Bottom Frame
         self.widget_4 = QtWidgets.QWidget(self.widget)
@@ -132,14 +138,6 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem3)
-        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem4)
-        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem5)
-        spacerItem6 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem6)
-        spacerItem7 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem7)
         
         # Quit Game Button
         self.toolButton_3 = QtWidgets.QToolButton(self.widget_4)
@@ -150,12 +148,8 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.toolButton_3.clicked.connect(self.quitgame)
         self.horizontalLayout_2.addWidget(self.toolButton_3)
         
-        spacerItem8 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem8)
-        spacerItem9 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem9)
-        spacerItem10 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem10)
+        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem4)
         
         # Difficulty Text
         self.label_5 = QtWidgets.QLabel(self.widget_4)
@@ -213,7 +207,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
                 self.player.jump()
             
     def framePaint(self, event):
-        painter = QtGui.QPainter(self.widget_3)
+        painter = QtGui.QPainter(self.frame)
         if self.focus:
             self.setFocus()
         else:
@@ -243,7 +237,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
     
     def animate(self):
         self.player.update()
-        self.widget_3.update()
+        self.frame.update()
         self.building.update()
         if self.player.dead:
             self.gameEnd()
