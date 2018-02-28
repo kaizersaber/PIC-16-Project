@@ -9,20 +9,24 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from bruin import Bruin
+from building import Building
 
 class FlappyBruinGame(QtWidgets.QMainWindow):
     def __init__(self):
         super(FlappyBruinGame, self).__init__()
         self.player = Bruin()
+        self.building = Building()
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.animate)
         self.active = False
+        self.focus = True
+        self.highscore, self.score = 0,0
         self.setupUi()
         
     def setupUi(self):
         # Layouts
         self.setObjectName("MainWindow")
-        self.resize(1026, 715)
+        self.resize(1000, 715)
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -120,11 +124,11 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         
         # Mute Button
-        self.checkBox = QtWidgets.QCheckBox(self.widget_4)
-        self.checkBox.setText("Mute")
-        self.checkBox.setStyleSheet("font: 75 16pt \"Calisto MT\";")
-        self.checkBox.setObjectName("checkBox")
-        self.horizontalLayout_2.addWidget(self.checkBox)
+        self.label_7 = QtWidgets.QLabel(self.widget_4)
+        self.label_7.setText("Press W to Jump")
+        self.label_7.setStyleSheet("font: 75 16pt \"Calisto MT\";")
+        self.label_7.setObjectName("label_7")
+        self.horizontalLayout_2.addWidget(self.label_7)
         
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem3)
@@ -178,15 +182,9 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         QtCore.QMetaObject.connectSlotsByName(self)
         
     def setMode(self):
-        mode = self.comboBox.CurrentText()
-        if mode == "Easy":
-            self.player.scaleFactor = 10.0
-        elif mode == "Medium":
-            self.player.scaleFactor = 7.5
-        elif mode == "Hard":
-            self.player.scaleFactor = 5.0
-        elif mode == "insane":
-            self.player.scaleFactor = 2.5
+        mode = self.comboBox.currentText()
+        self.focus = True
+        self.player.setDiff(mode)
     
     def displayRules(self):
         self.label.setText("Press W to jump")
@@ -194,7 +192,8 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
     def gameStart(self):
         self.label.hide()
         self.toolButton_2.hide()
-        self.label_2.setText("0")
+        self.score = 0
+        self.label_2.setText(str(self.score))
         self.active = True
         self.timer.start(10)
     
@@ -215,12 +214,28 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
             
     def framePaint(self, event):
         painter = QtGui.QPainter(self.widget_3)
-        self.player.paintBruin(painter)
+        if self.focus:
+            self.setFocus()
+        else:
+            self.focus = True
+        if self.active:
+            self.player.paintBruin(painter)
+            self.building.paintBuilding(painter)
+    
+    def eventFilter(self,source,event):
+        if event.type() == QtCore.QEvent.HoverMove:
+            if self.comboBox.underMouse():
+                self.comboBox.setFocus()
+                self.focus = False
+            else:
+                self.focus = True
     
     def incrementScore(self):
-        i = int(self.label_2.text())
-        i = i + 1
-        self.label_2.setText(str(i))
+        self.score = self.score + 1
+        self.label_2.setText(str(self.score))
+        if self.score > self.highscore:
+            self.highscore = self.score
+            self.label_4.setText(str(self.highscore))
 
     def quitgame(self):
         self.timer.stop()
@@ -229,6 +244,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
     def animate(self):
         self.player.update()
         self.widget_3.update()
+        self.building.update()
         if self.player.dead:
             self.gameEnd()
 

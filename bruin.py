@@ -4,9 +4,11 @@ Created on Tue Feb 27 21:29:18 2018
 
 @author: Tan
 """
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Bruin(object):
     def __init__(self):
+        self.scaleFactor = 10.0
         self.reset()
     
     def reset(self):
@@ -14,13 +16,22 @@ class Bruin(object):
         self.vx, self.vy = 0,0
         self.ay = -9.81
         self.dead = False
-        self.scaleFactor = 7.5
     
     def setPos(self,x,y):
         self.x, self.y = x,y
         
+    def setDiff(self, mode):
+        if mode == "Easy":
+            self.scaleFactor = 10.0
+        elif mode == "Medium":
+            self.scaleFactor = 7.5
+        elif mode == "Hard":
+            self.scaleFactor = 5.0
+        elif mode == "insane":
+            self.scaleFactor = 2.5
+        
     def jump(self):
-        self.vy = 50
+        self.vy = 40
     
     def update(self):
         if self.y < 100:
