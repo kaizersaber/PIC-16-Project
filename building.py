@@ -46,11 +46,11 @@ class Building(object):
         if mode == "Easy":
             self.scaleFactor = 10.0
         elif mode == "Medium":
-            self.scaleFactor = 7.5
+            self.scaleFactor = 8.0
         elif mode == "Hard":
-            self.scaleFactor = 5.0
+            self.scaleFactor = 6.0
         elif mode == "Insane":
-            self.scaleFactor = 2.5
+            self.scaleFactor = 4.0
     
     def paintBuilding(self, painter):
         self.upper_x = self.x
@@ -68,3 +68,4 @@ class Building(object):
         
     def resetPos(self):
         self.x = self.start_x
+        self.randomizeGap()

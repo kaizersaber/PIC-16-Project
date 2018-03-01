@@ -39,17 +39,13 @@ class Bruin(object):
         elif mode == "Hard":
             self.scaleFactor = 6.0
         elif mode == "Insane":
-            self.scaleFactor = 4.0
+            self.scaleFactor = 5.0
         
     def jump(self):
-        self.vy = -40
+        self.vy = -40 - (10 - self.scaleFactor)
     
     def update(self, buildings):
-        if self.y > self.lb():
-            print "LB: ", self.y, self.lb()
-            self.dead = True
-        if self.y < self.ub:
-            print "UB: ", self.y, self.ub
+        if (self.y > self.lb()) | (self.y < self.ub):
             self.dead = True
 
         for b in buildings:
