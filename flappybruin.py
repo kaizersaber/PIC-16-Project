@@ -189,6 +189,8 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
     def gameStart(self):
         self.label.hide()
         self.toolButton_2.hide()
+        for b in self.buildings:
+            b.resetPos()
         self.score = 0
         self.label_2.setText(str(self.score))
         self.active = True
@@ -202,8 +204,6 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.toolButton_2.setText("Restart")
         self.active = False
         self.player.reset()
-        for b in self.buildings:
-            b.resetPos()
 
     def framePress(self,event):
         print event.x(), event.y()
@@ -218,8 +218,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         if self.player == None:
             self.player = Bruin(self.frame)
         if self.buildings == None:
-            n = 3
-            self.buildings = [Building(self.frame,n) for x in range(n)]
+            self.buildings = [Building(self.frame) for x in range(4)]
         painter = QtGui.QPainter(self.frame)
         if self.focus:
             self.setFocus()
