@@ -2,28 +2,45 @@
 """
 Created on Tue Feb 27 21:38:38 2018
 
-@author: Ryan, Tan
+@author: Tan
 """
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui, QtWidgets
 import random
 
 class Building(object):
-    def __init__(self, start_x=1000, start_y=5, buildingWidth=200):
+    count = 0
+    def __init__(self, frame, n):
         self.scaleFactor = 10.0
-        self.start_x = start_x
-        self.x = start_x
-        self.y = start_y
-        self.v_x = -15.0
-        self.v_y = 0.0
-        self.buildingWidth = buildingWidth
-        self.gapHeightList = [50, 200, 350]
-        self.gapHeight = random.choice(self.gapHeightList)
+        self.frame = frame
+        self.ub = 5
+        self.width = 200
+        self.interval = (self.w()+self.width)/n
+        print self.w(), self.width
+        self.start_x = self.w() + Building.count*self.interval
+        self.x = self.start_x
+        self.y = 5
+        self.vx = -15.0
+        self.gapSize = (self.h()-10)/3
+        self.randomizeGap()
+        Building.count = Building.count + 1
+    
+    def w(self):
+        return self.frame.geometry().width()
+    
+    def h(self):
+        return self.frame.geometry().height()
+
+    def lb(self):
+        return self.ub + self.h() - 2*5
+
+    def randomizeGap(self):
+        self.gapHeight = random.randint(5, self.h() - 5 - self.gapSize)
     
     def update(self):
-        self.x += self.v_x/self.scaleFactor
-        if self.x < -200:
-            self.x = 1000
-            self.gapHeight = random.choice(self.gapHeightList)
+        self.x += self.vx/self.scaleFactor
+        if self.x < -self.width:
+            self.x = self.w()
+            self.randomizeGap()
     
     def setDiff(self, mode):
         if mode == "Easy":
@@ -36,34 +53,18 @@ class Building(object):
             self.scaleFactor = 2.5
     
     def paintBuilding(self, painter):
-        gapSize = 150
         self.upper_x = self.x
         self.upper_y = self.y
-        self.upper_w = self.buildingWidth
+        self.upper_w = 50
         self.upper_h = self.gapHeight
-        self.upper = painter.fillRect(self.upper_x, 
-                                      self.upper_y, 
-                                      self.upper_w,
-                                      self.upper_h, 
-                                      QtCore.Qt.darkRed)
-        self.middle_x = self.x
-        self.middle_y = self.y+self.gapHeight
-        self.middle_w = self.buildingWidth
-        self.middle_h = gapSize
-        self.middle = painter.fillRect(self.middle_x,
-                                       self.middle_y,
-                                       self.middle_w,
-                                       self.middle_h,
-                                       QtCore.Qt.lightGray)
-        
+        self.upper = painter.fillRect(self.upper_x, self.upper_y, self.width, 
+                                      self.upper_h, QtCore.Qt.red)
         self.lower_x = self.x
-        self.lower_y = self.y+self.gapHeight+gapSize
-        self.lower_w = self.buildingWidth
-        self.lower_h = 706-(self.y+self.gapHeight+gapSize)
-        self.lower = painter.fillRect(self.lower_x, 
-                                      self.lower_y, 
-                                      self.lower_w, 
-                                      self.lower_h, 
-                                      QtCore.Qt.darkRed)    
+        self.lower_y = self.y+self.gapHeight+self.gapSize
+        self.lower_h = self.lb() - self.lower_y
+        if self.lower_y < self.h() - 5:
+            self.lower = painter.fillRect(self.lower_x, self.lower_y, self.width, 
+                                          self.lower_h, QtCore.Qt.red)
+        
     def resetPos(self):
         self.x = self.start_x

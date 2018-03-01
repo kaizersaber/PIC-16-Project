@@ -14,14 +14,14 @@ from building import Building
 class FlappyBruinGame(QtWidgets.QMainWindow):
     def __init__(self):
         super(FlappyBruinGame, self).__init__()
-        self.buildings = [Building(1000+x*400, 5, 200) for x in range(3)]
-        self.player = Bruin()
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.animate)
         self.active = False
         self.focus = True
         self.highscore, self.score = 0,0
         self.setupUi()
+        self.player = None
+        self.buildings = None
         
     def setupUi(self):
         # Layouts
@@ -93,7 +93,8 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.frame.paintEvent = self.framePaint
-   #     print self.frame.sizeHint()
+        self.frame.mousePressEvent = self.framePress
+ #     print self.frame.sizeHint()
    #     self.height, self.width = self.frame.geometry().height(), self.frame.geometry().width()
    #     self.player.setBounds(self.height, self.width)
         
@@ -112,7 +113,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.toolButton_2 = QtWidgets.QToolButton(self.frame)
         self.toolButton_2.setText("Start Game")
         self.toolButton_2.setStyleSheet("background-color: rgb(0, 255, 255);\n"
-                                        "font: 75 16pt \"Calisto MT\";")
+"font: 75 16pt \"Calisto MT\";")
         self.toolButton_2.setObjectName("toolButton_2")
         self.toolButton_2.clicked.connect(self.gameStart)
         self.verticalLayout_2.addWidget(self.toolButton_2, 0, QtCore.Qt.AlignHCenter)
@@ -143,7 +144,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.toolButton_3 = QtWidgets.QToolButton(self.widget_4)
         self.toolButton_3.setText("Quit Game")
         self.toolButton_3.setStyleSheet("background-color: rgb(170, 255, 255);\n"
-                                        "font: 75 16pt \"Calisto MT\";")
+"font: 75 16pt \"Calisto MT\";")
         self.toolButton_3.setObjectName("toolButton_3")
         self.toolButton_3.clicked.connect(self.quitgame)
         self.horizontalLayout_2.addWidget(self.toolButton_3)
@@ -161,7 +162,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         # Difficulty Menu
         self.comboBox = QtWidgets.QComboBox(self.widget_4)
         self.comboBox.setStyleSheet("background-color: rgb(170, 255, 255);\n"
-                                    "font: 16pt \"Calisto MT\";")
+"font: 16pt \"Calisto MT\";")
         self.comboBox.setObjectName("comboBox")
         self.comboBox.addItem("Easy")
         self.comboBox.addItem("Medium")
@@ -178,9 +179,9 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
     def setMode(self):
         mode = self.comboBox.currentText()
         self.focus = True
+        self.player.setDiff(mode)
         for b in self.buildings:
             b.setDiff(mode)
-        self.player.setDiff(mode)
     
     def displayRules(self):
         self.label.setText("Press W to jump")
@@ -204,6 +205,9 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         for b in self.buildings:
             b.resetPos()
 
+    def framePress(self,event):
+        print event.x(), event.y()
+    
     def keyPressEvent(self, event):
         if self.active:
             if event.key() == QtCore.Qt.Key_W:
@@ -211,15 +215,20 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
                 self.player.jump()
             
     def framePaint(self, event):
+        if self.player == None:
+            self.player = Bruin(self.frame)
+        if self.buildings == None:
+            n = 3
+            self.buildings = [Building(self.frame,n) for x in range(n)]
         painter = QtGui.QPainter(self.frame)
         if self.focus:
             self.setFocus()
         else:
             self.focus = True
         if self.active:
+            self.player.paintBruin(painter)
             for b in self.buildings:
                 b.paintBuilding(painter)
-            self.player.paintBruin(painter)
             
     
     def eventFilter(self,source,event):
@@ -242,11 +251,10 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.close()
     
     def animate(self):
-        #draw buildings before player
-        for b in self.buildings:
-            b.update()
         self.player.update(self.buildings)
         self.frame.update()
+        for b in self.buildings:
+            b.update()
         if self.player.dead:
             self.gameEnd()
 
