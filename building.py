@@ -2,7 +2,7 @@
 """
 Created on Tue Feb 27 21:38:38 2018
 
-@author: Tan
+@author: Ryan, Tan
 """
 from PyQt5 import QtCore, QtGui, QtWidgets
 import random
@@ -15,7 +15,7 @@ class Building(object):
         self.y = start_y
         self.v_x = -15.0
         self.v_y = 0.0
-        self.gapHeightList = [50*i for i in range(10)]
+        self.gapHeightList = [50, 150, 250]
         self.gapHeight = random.choice(self.gapHeightList)
     
     def update(self):
@@ -36,24 +36,34 @@ class Building(object):
     
     def paintBuilding(self, painter):
         gapSize = 200
+        buildingWidth = 175
         self.upper_x = self.x
         self.upper_y = self.y
-        self.upper_w = 50
+        self.upper_w = buildingWidth
         self.upper_h = self.gapHeight
         self.upper = painter.fillRect(self.upper_x, 
                                       self.upper_y, 
                                       self.upper_w,
                                       self.upper_h, 
-                                      QtCore.Qt.red)
+                                      QtCore.Qt.darkRed)
+        self.middle_x = self.x
+        self.middle_y = self.y+self.gapHeight
+        self.middle_w = buildingWidth
+        self.middle_h = gapSize
+        self.middle = painter.fillRect(self.middle_x,
+                                       self.middle_y,
+                                       self.middle_w,
+                                       self.middle_h,
+                                       QtCore.Qt.lightGray)
+        
         self.lower_x = self.x
         self.lower_y = self.y+self.gapHeight+gapSize
-        self.lower_w = 50
+        self.lower_w = buildingWidth
         self.lower_h = 706-(self.y+self.gapHeight+gapSize)
         self.lower = painter.fillRect(self.lower_x, 
                                       self.lower_y, 
                                       self.lower_w, 
                                       self.lower_h, 
-                                      QtCore.Qt.red)
-        
+                                      QtCore.Qt.darkRed)    
     def resetPos(self):
         self.x = self.start_x
