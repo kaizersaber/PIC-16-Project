@@ -1,11 +1,3 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Mar  2 13:50:17 2018
-
-@author: ryangrgurich
-"""
-
 # -*- coding: utf-8 -*-
 """
 Created on Tue Feb 27 21:29:18 2018
