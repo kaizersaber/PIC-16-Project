@@ -49,7 +49,7 @@ class Bruin(object):
             self.dead = True
 
         for b in buildings:
-            c1 = (b.upper_x <= self.x) & (self.x <= b.upper_x + b.width)
+            c1 = (b.x <= self.x) & (self.x <= b.x + b.width)
             c2 = (b.lower_y <= self.y) | (self.y <= b.upper_y + b.upper_h)
             if (c1 and c2):
                 self.dead = True
