@@ -215,20 +215,20 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
                 self.player.jump()
             
     def framePaint(self, event):
-        if self.player == None:
-            self.player = Bruin(self.frame)
         if self.buildings == None:
             n = 3
             self.buildings = [Building(self.frame,n) for x in range(n)]
+        if self.player == None:
+            self.player = Bruin(self.frame)
         painter = QtGui.QPainter(self.frame)
         if self.focus:
             self.setFocus()
         else:
             self.focus = True
         if self.active:
-            self.player.paintBruin(painter)
             for b in self.buildings:
                 b.paintBuilding(painter)
+            self.player.paintBruin(painter)
             
     
     def eventFilter(self,source,event):
