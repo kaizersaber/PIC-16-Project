@@ -82,7 +82,6 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.label_2.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_2.setObjectName("label_2")
         self.horizontalLayout.addWidget(self.label_2)
-        
         self.verticalLayout.addWidget(self.widget_2)
         
         # Center Frame
@@ -215,10 +214,10 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
                 self.player.jump()
             
     def framePaint(self, event):
-        if self.player == None:
-            self.player = Bruin(self.frame)
         if self.buildings == None:
             self.buildings = [Building(self.frame) for x in range(4)]
+        if self.player == None:
+            self.player = Bruin(self.frame)
         painter = QtGui.QPainter(self.frame)
         if self.focus:
             self.setFocus()

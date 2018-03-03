@@ -14,13 +14,16 @@ class Building(object):
         Building.count = Building.count + 1
         self.scaleFactor = 10.0
         self.frame = frame
-        self.ub = 5
+        self.ub = 4
         self.resize()
         self.x = self.start_x
-        self.y = 5
+        self.y = 4
         self.vx = -15.0
-        self.gapSize = (self.h()-10)/3
         self.randomizeGap()
+        self.setUML()
+        self.img_building = QtGui.QImage("building0.png")
+        self.img_window = QtGui.QImage("inner1.png")
+        self.img_lobby = QtGui.QImage("inner0.png")
         
     def w(self):
         return self.frame.geometry().width()
@@ -29,10 +32,11 @@ class Building(object):
         return self.frame.geometry().height()
 
     def lb(self):
-        return self.ub + self.h() - 2*5
+        return self.ub + self.h() - 2*4
 
     def randomizeGap(self):
-        self.gapHeight = random.randint(5, self.h() - 5 - self.gapSize)
+        self.gapIndex = random.randint(0,3)
+        self.gapHeight = self.gapIndex*(self.h()-10)/4.0
     
     def update(self):
         self.x += self.vx/self.scaleFactor
@@ -50,20 +54,31 @@ class Building(object):
         elif mode == "Insane":
             self.scaleFactor = 4.0
     
-    def paintBuilding(self, painter):
+    def setUML(self):
         self.upper_x = self.x
         self.upper_y = self.y
         self.upper_h = self.gapHeight
-        self.upper = painter.fillRect(self.upper_x, self.upper_y, self.width, 
-                                      self.upper_h, QtCore.Qt.red)
+        self.middle_x = self.x
+        self.middle_y = self.gapHeight + self.y
+        self.middle_h = self.gapSize
         self.lower_x = self.x
         self.lower_y = self.y + self.gapHeight + self.gapSize
         self.lower_h = self.lb() - self.lower_y
-        if self.lower_y < self.h() - 5:
-            self.lower = painter.fillRect(self.lower_x, self.lower_y, self.width, 
-                                          self.lower_h, QtCore.Qt.red)
+    
+    def paintBuilding(self, painter):
+        self.setUML()
+        painter.drawImage(self.upper_x, self.upper_y, self.img_building.scaled(self.width,self.lb()-self.ub),
+                          sx = 0, sy = 0, sw = -1, sh = -1)
+        if self.gapIndex < 3:
+            painter.drawImage(self.middle_x, self.middle_y, self.img_window.scaled(self.width,self.middle_h),
+                              sx = 0, sy = 0, sw = -1, sh = -1)
+        else:
+            painter.drawImage(self.middle_x, self.middle_y, self.img_lobby.scaled(self.width,self.middle_h+2),
+                              sx = 0, sy = 0, sw = -1, sh = -1)
+         
     
     def resize(self):
+        self.gapSize = (self.h()-10)/4
         self.width = self.w()/(2*(Building.count+1))
         self.interval = (self.w() + self.width)/Building.count
         self.start_x = self.w() + self.index*self.interval
@@ -71,5 +86,4 @@ class Building(object):
     def resetPos(self):
         self.resize()
         self.x = self.start_x
-        print self.start_x, self.interval
         self.randomizeGap()
