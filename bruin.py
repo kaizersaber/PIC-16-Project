@@ -27,6 +27,15 @@ class Bruin(object):
         self.vx, self.vy = 0,0
         self.ay = 0.015*self.h()
         self.dead = False
+        self.inBuilding = False
+        self.score = 0
+    
+    def buildingCheck(self, bool):
+        if self.inBuilding:
+            print "In Building: ", self.inBuilding, "bool: ", bool
+            if not bool:
+                self.score += 1
+        self.inBuilding = bool
     
     def setPos(self,x,y):
         self.x, self.y = x,y
@@ -45,12 +54,21 @@ class Bruin(object):
     def update(self, buildings):
         if (self.y > self.lb()) | (self.y < self.ub):
             self.dead = True
-
+        
+        buildingChecks = []
         for b in buildings:
-            c1 = (b.x <= self.x) & (self.x <= b.x + b.width)
-            c2 = (b.lower_y <= self.y) | (self.y <= b.upper_y + b.upper_h)
-            if (c1 and c2):
-                self.dead = True
+            if (b.x <= self.x) & (self.x <= b.x + b.width):
+                if (b.lower_y <= self.y) | (self.y <= b.upper_y + b.upper_h):
+                    self.dead = True
+                else:
+                    buildingChecks.append(True)
+            else:
+                buildingChecks.append(False)
+                
+        if any(buildingChecks):
+            self.buildingCheck(True)
+        else:
+            self.buildingCheck(False)
         
         self.vy += self.ay / self.scaleFactor
         self.x += self.vx / self.scaleFactor

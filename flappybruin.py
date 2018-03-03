@@ -93,10 +93,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.frame.paintEvent = self.framePaint
         self.frame.mousePressEvent = self.framePress
- #     print self.frame.sizeHint()
-   #     self.height, self.width = self.frame.geometry().height(), self.frame.geometry().width()
-   #     self.player.setBounds(self.height, self.width)
-        
+
         spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_2.addItem(spacerItem1)
         
@@ -111,8 +108,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         # Start Game Button
         self.toolButton_2 = QtWidgets.QToolButton(self.frame)
         self.toolButton_2.setText("Start Game")
-        self.toolButton_2.setStyleSheet("background-color: rgb(0, 255, 255);\n"
-"font: 75 16pt \"Calisto MT\";")
+        self.toolButton_2.setStyleSheet("background-color: rgb(0, 255, 255);\n" "font: 75 16pt \"Calisto MT\";")
         self.toolButton_2.setObjectName("toolButton_2")
         self.toolButton_2.clicked.connect(self.gameStart)
         self.verticalLayout_2.addWidget(self.toolButton_2, 0, QtCore.Qt.AlignHCenter)
@@ -142,8 +138,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         # Quit Game Button
         self.toolButton_3 = QtWidgets.QToolButton(self.widget_4)
         self.toolButton_3.setText("Quit Game")
-        self.toolButton_3.setStyleSheet("background-color: rgb(170, 255, 255);\n"
-"font: 75 16pt \"Calisto MT\";")
+        self.toolButton_3.setStyleSheet("background-color: rgb(170, 255, 255);\n" "font: 75 16pt \"Calisto MT\";")
         self.toolButton_3.setObjectName("toolButton_3")
         self.toolButton_3.clicked.connect(self.quitgame)
         self.horizontalLayout_2.addWidget(self.toolButton_3)
@@ -160,8 +155,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         
         # Difficulty Menu
         self.comboBox = QtWidgets.QComboBox(self.widget_4)
-        self.comboBox.setStyleSheet("background-color: rgb(170, 255, 255);\n"
-"font: 16pt \"Calisto MT\";")
+        self.comboBox.setStyleSheet("background-color: rgb(170, 255, 255);\n" "font: 16pt \"Calisto MT\";")
         self.comboBox.setObjectName("comboBox")
         self.comboBox.addItem("Easy")
         self.comboBox.addItem("Medium")
@@ -209,7 +203,6 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
     def keyPressEvent(self, event):
         if self.active:
             if event.key() == QtCore.Qt.Key_W:
-                self.incrementScore()
                 self.player.jump()
             
     def framePaint(self, event):
@@ -236,8 +229,8 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
             else:
                 self.focus = True
     
-    def incrementScore(self):
-        self.score = self.score + 1
+    def updateScore(self):
+        self.score = self.player.score
         self.label_2.setText(str(self.score))
         if self.score > self.highscore:
             self.highscore = self.score
@@ -249,6 +242,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
     
     def animate(self):
         self.player.update(self.buildings)
+        self.updateScore()
         self.frame.update()
         for b in self.buildings:
             b.update()
