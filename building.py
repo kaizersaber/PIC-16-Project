@@ -30,16 +30,16 @@ class Building(object):
         self.gapSize = (self.h()-10)/3
         self.gapHeights=np.linspace(0,1,4,endpoint=False)*self.h()
         self.randomizeGap()
-        self.img_building_upper = (QImage("imgfiles/upper0.png"), 
-                                   QImage("imgfiles/upper1.png"), 
-                                   QImage("imgfiles/upper2.png"))
-        self.img_building_middle = (QImage("imgfiles/inner1.png"), 
-                                   QImage("imgfiles/inner1.png"), 
-                                   QImage("imgfiles/inner1.png"),
-                                   QImage("imgfiles/inner0.png"))
-        self.img_building_lower = (QImage("imgfiles/lower1.png"), 
-                                   QImage("imgfiles/lower0.png"), 
-                                   QImage("imgfiles/lower2.png"))
+        self.img_building_upper = (QImage("upper0.png"), 
+                                   QImage("upper1.png"), 
+                                   QImage("upper2.png"))
+        self.img_building_middle = (QImage("inner1.png"), 
+                                   QImage("inner1.png"), 
+                                   QImage("inner1.png"),
+                                   QImage("inner0.png"))
+        self.img_building_lower = (QImage("lower1.png"), 
+                                   QImage("lower0.png"), 
+                                   QImage("lower2.png"))
         Building.count = Building.count + 1
     
     def w(self):
