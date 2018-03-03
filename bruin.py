@@ -25,7 +25,7 @@ class Bruin(object):
     def reset(self):
         self.x, self.y = self.w()/4, self.h()/2 + self.ub
         self.vx, self.vy = 0,0
-        self.ay = 9.81
+        self.ay = 0.015*self.h()
         self.dead = False
     
     def setPos(self,x,y):
@@ -37,12 +37,10 @@ class Bruin(object):
         elif mode == "Medium":
             self.scaleFactor = 8.0
         elif mode == "Hard":
-            self.scaleFactor = 6.0
-        elif mode == "Insane":
-            self.scaleFactor = 5.0
+            self.scaleFactor = 7.0
         
     def jump(self):
-        self.vy = -40 - (10 - self.scaleFactor)
+        self.vy = -(self.h()-2*5)/16 - (10 - self.scaleFactor)
     
     def update(self, buildings):
         if (self.y > self.lb()) | (self.y < self.ub):

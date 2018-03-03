@@ -166,7 +166,6 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.comboBox.addItem("Easy")
         self.comboBox.addItem("Medium")
         self.comboBox.addItem("Hard")
-        self.comboBox.addItem("Insane")
         self.comboBox.currentIndexChanged.connect(self.setMode)
         self.horizontalLayout_2.addWidget(self.comboBox)
         self.verticalLayout.addWidget(self.widget_4)
@@ -215,7 +214,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
             
     def framePaint(self, event):
         if self.buildings == None:
-            self.buildings = [Building(self.frame) for x in range(4)]
+            self.buildings = [Building(self.frame) for x in range(3)]
         if self.player == None:
             self.player = Bruin(self.frame)
         painter = QtGui.QPainter(self.frame)

@@ -18,7 +18,6 @@ class Building(object):
         self.resize()
         self.x = self.start_x
         self.y = 4
-        self.vx = -15.0
         self.randomizeGap()
         self.setUML()
         self.img_building = QtGui.QImage("building0.png")
@@ -51,8 +50,6 @@ class Building(object):
             self.scaleFactor = 8.0
         elif mode == "Hard":
             self.scaleFactor = 6.0
-        elif mode == "Insane":
-            self.scaleFactor = 4.0
     
     def setUML(self):
         self.upper_x = self.x
@@ -78,10 +75,11 @@ class Building(object):
          
     
     def resize(self):
-        self.gapSize = (self.h()-10)/4
+        self.gapSize = (self.h()-2*5)/4
         self.width = self.w()/(2*(Building.count+1))
         self.interval = (self.w() + self.width)/Building.count
         self.start_x = self.w() + self.index*self.interval
+        self.vx = -0.015*self.w()
         
     def resetPos(self):
         self.resize()
