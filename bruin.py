@@ -86,4 +86,4 @@ class Bruin(object):
     
     # fill square unit with Bruin Blue
     def paintBruin(self,painter):
-        painter.drawImage(self.x, self.y, self.joe_image.scaled(40, 40))
+        painter.drawImage(self.x, self.y, self.joe_image.scaled(35, 35))
