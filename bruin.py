@@ -12,6 +12,7 @@ class Bruin(object):
         self.frame = frame
         self.ub = 5 # upperbound
         self.reset()
+        self.joe_image = QtGui.QImage("Joe_Bruin.png")
     
     # width of the frame
     def w(self):
@@ -78,11 +79,11 @@ class Bruin(object):
                 self.buildingCheck(True) # for 
             else:
                 self.buildingCheck(False)
-        
+        # adjusts y velocity/acceleration of the bruin
         self.vy += self.ay / self.scaleFactor
         self.x += self.vx / self.scaleFactor
         self.y += self.vy / self.scaleFactor
     
     # fill square unit with Bruin Blue
     def paintBruin(self,painter):
-        painter.fillRect(self.x - 5, self.y - 5, 11, 11, QtCore.Qt.blue)
+        painter.drawImage(self.x, self.y, self.joe_image.scaled(40, 40))
