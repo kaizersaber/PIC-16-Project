@@ -4,9 +4,13 @@ Created on Tue Feb 27 21:29:18 2018
 
 @author: Tan
 """
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets, QtMultimedia
 
 class Bruin(object):
+    jumpsound = QtMultimedia.QMediaContent(QtCore.QUrl.fromLocalFile("jump.mp3"))
+    jumpPlayer = QtMultimedia.QMediaPlayer()
+    jumpPlayer.setMedia(jumpsound)
+    jumpPlayer.setVolume(100)
     def __init__(self, frame):
         self.scaleFactor = 10.0
         self.frame = frame
@@ -32,7 +36,6 @@ class Bruin(object):
     
     def buildingCheck(self, bool):
         if self.inBuilding:
-            print "In Building: ", self.inBuilding, "bool: ", bool
             if not bool:
                 self.score += 1
         self.inBuilding = bool
@@ -49,6 +52,8 @@ class Bruin(object):
             self.scaleFactor = 7.0
         
     def jump(self):
+        Bruin.jumpPlayer.stop()
+        Bruin.jumpPlayer.play()
         self.vy = -(self.h()-2*5)/16 - (10 - self.scaleFactor)
     
     def update(self, buildings):
