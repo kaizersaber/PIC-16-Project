@@ -7,7 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 import sys
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets, QtMultimedia
 from bruin import Bruin
 from building import Building
 
@@ -22,7 +22,11 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.setupUi()
         self.player = None
         self.buildings = None
-        
+        self.setupAudio()
+    
+    def setupAudio(self):
+        pass
+    
     def setupUi(self):
         # Layouts
         self.setObjectName("MainWindow")
@@ -242,12 +246,13 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
     
     def animate(self):
         self.player.update(self.buildings)
-        self.updateScore()
         self.frame.update()
         for b in self.buildings:
             b.update()
         if self.player.dead:
             self.gameEnd()
+        else:
+            self.updateScore()
 
 def main():
     app = QtWidgets.QApplication.instance()

@@ -1,53 +1,58 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Feb 27 21:29:18 2018
+
 @author: Tan
 """
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets, QtMultimedia
 
-# Bruin class creates and updates the score, position, and life of the bruin player
+# Bruin class creates and updates the score, position of Bruin Player
 class Bruin(object):
     def __init__(self, frame):
         self.scaleFactor = 10.0
         self.frame = frame
-        self.ub = 5 # upperbound
+        self.ub = 5
         self.reset()
-        self.joe_image = QtGui.QImage("Joe_Bruin.png")
+        self.setupAudio()
+        self.graphic = QtGui.QImage("Joe_Bruin.png")
     
-    # width of the frame
+    # Setup Audio for jumping sound
+    def setupAudio(self):
+        self.jumpsound = QtMultimedia.QMediaContent(QtCore.QUrl.fromLocalFile('jump.mp3'))
+        self.jumpPlayer = QtMultimedia.QMediaPlayer()
+        self.jumpPlayer.setMedia(self.jumpsound)
+        self.jumpPlayer.setVolume(100)
+    
+    # w gets the current width of the frame
     def w(self):
         return self.frame.geometry().width()
     
-    # height of the frame
+    # h gets the current height of the frame
     def h(self):
         return self.frame.geometry().height()
-
-    # lowerbound
+    
+    # lb updates the current lower bound for the player
     def lb(self):
         return self.ub + self.h() - 2*5
     
-    # updates position of the square as well as survival status
+    # reset resets the player's position, speed, size and status
     def reset(self):
         self.x, self.y = self.w()/4, self.h()/2 + self.ub
         self.vx, self.vy = 0,0
         self.ay = 0.015*self.h()
+        self.size = self.h()/20
         self.dead = False
         self.inBuilding = False
         self.score = 0
     
-    # runs list of bools; contains a True for clean passage through building
+    # buildingCheck updates score when a player exits a building safely
     def buildingCheck(self, bool):
         if self.inBuilding:
-            print "In Building: ", self.inBuilding, "bool: ", bool
             if not bool:
                 self.score += 1
         self.inBuilding = bool
     
-    # SetsPosition of Bruin
-    def setPos(self,x,y):
-        self.x, self.y = x,y
-    
-    # Sets new Scalar Factor depending on difficulty level (lower value is harder level)
+    # setDiff sets the difficulty factors based on mode
     def setDiff(self, mode):
         if mode == "Easy":
             self.scaleFactor = 10.0
@@ -56,34 +61,37 @@ class Bruin(object):
         elif mode == "Hard":
             self.scaleFactor = 7.0
     
-    # adjust Bruin Velocity based on frame height and scal
+    # jump increases upward velocity of player and plays sound
     def jump(self):
+        self.jumpPlayer.stop()
+        self.jumpPlayer.play()
         self.vy = -(self.h()-2*5)/16 - (10 - self.scaleFactor)
     
-    # Updates to check if bruin has hit building or frame edge
+    # update updates the current position and checks for collisions
     def update(self, buildings):
-        # checks edge of frame
-        if (self.y > self.lb()) | (self.y < self.ub):
+        if (self.y + self.size/2 > self.lb()) | (self.y - self.size/2 < self.ub):
             self.dead = True
-        checklist = []
-        # checks for edge of buildings
+        
+        buildingChecks = []
         for b in buildings:
-            if (b.x <= self.x) & (self.x <= b.x + b.width):
-                if (b.lower_y <= self.y) | (self.y <= b.upper_y + b.upper_h):
-                    self.dead = True # if hit edge; bruin dead and game over
-                else: # exiting safe area
-                    checklist.append(True)
-        # Once bruin exits clear door area, if not dead then update score via buildingCheck
-        if not self.dead:
-            if any(checklist):
-                self.buildingCheck(True) # for 
+            if (b.x <= self.x + self.size/2 - 1) & (self.x - self.size/2 + 1 <= b.x + b.width):
+                if (b.middle_y >= self.y - self.size/2 - 5) | (self.y + self.size/2 - 1 >= b.lower_y):
+                    self.dead = True
+                else:
+                    buildingChecks.append(True)
             else:
-                self.buildingCheck(False)
-        # adjusts y velocity/acceleration of the bruin
+                buildingChecks.append(False)
+                
+        if any(buildingChecks):
+            self.buildingCheck(True)
+        else:
+            self.buildingCheck(False)
+        
         self.vy += self.ay / self.scaleFactor
         self.x += self.vx / self.scaleFactor
         self.y += self.vy / self.scaleFactor
     
-    # fill square unit with Bruin Blue
+    # paintBruin defines how to paint the player
     def paintBruin(self,painter):
-        painter.drawImage(self.x, self.y, self.joe_image.scaled(35, 35))
+        painter.drawImage(self.x - self.size/2, self.y - self.size/2, 
+                          self.graphic.scaled(self.size,self.size))
