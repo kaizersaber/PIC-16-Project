@@ -5,6 +5,7 @@ Created on Tue Feb 27 21:29:18 2018
 @author: Tan
 """
 from PyQt5 import QtCore, QtGui, QtWidgets, QtMultimedia
+import pygame
 
 # Bruin class creates and updates the score, position of Bruin Player
 class Bruin(object):
@@ -13,15 +14,8 @@ class Bruin(object):
         self.frame = frame
         self.ub = 5
         self.reset()
-        self.setupAudio()
+        self.jumpSound = pygame.mixer.Sound('jump.ogg')
         self.graphic = QtGui.QImage("Joe_Bruin.png")
-    
-    # Setup Audio for jumping sound
-    def setupAudio(self):
-        self.jumpsound = QtMultimedia.QMediaContent(QtCore.QUrl.fromLocalFile('jump.mp3'))
-        self.jumpPlayer = QtMultimedia.QMediaPlayer()
-        self.jumpPlayer.setMedia(self.jumpsound)
-        self.jumpPlayer.setVolume(100)
     
     # w gets the current width of the frame
     def w(self):
@@ -57,14 +51,14 @@ class Bruin(object):
         if mode == "Easy":
             self.scaleFactor = 10.0
         elif mode == "Medium":
-            self.scaleFactor = 8.0
+            self.scaleFactor = 9.0
         elif mode == "Hard":
-            self.scaleFactor = 7.0
+            self.scaleFactor = 8.0
     
     # jump increases upward velocity of player and plays sound
     def jump(self):
-        self.jumpPlayer.stop()
-        self.jumpPlayer.play()
+        pygame.mixer.Channel(0).stop()
+        pygame.mixer.Channel(0).play(self.jumpSound)
         self.vy = -(self.h()-2*5)/16 - (10 - self.scaleFactor)
     
     # update updates the current position and checks for collisions

@@ -76,7 +76,7 @@ class Building(object):
     
     def resize(self):
         self.gapSize = (self.h()-2*5)/4
-        self.width = self.w()/(2*(Building.count+1))
+        self.width = self.w()/(2.5*(Building.count+1))
         self.interval = (self.w() + self.width)/Building.count
         self.start_x = self.w() + self.index*self.interval
         self.vx = -0.015*self.w()

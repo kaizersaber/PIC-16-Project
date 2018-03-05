@@ -10,6 +10,7 @@ import sys
 from PyQt5 import QtCore, QtGui, QtWidgets, QtMultimedia
 from bruin import Bruin
 from building import Building
+import pygame
 
 class FlappyBruinGame(QtWidgets.QMainWindow):
     def __init__(self):
@@ -22,10 +23,14 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.setupUi()
         self.player = None
         self.buildings = None
+        self.graphic = QtGui.QImage("lasky.png")
         self.setupAudio()
     
     def setupAudio(self):
-        pass
+        pygame.mixer.init()
+        pygame.mixer.music.load('intro.mp3')
+        pygame.mixer.music.set_volume(1)
+        pygame.mixer.music.play(loops = -1)
     
     def setupUi(self):
         # Layouts
@@ -183,6 +188,9 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.label.setText("Press W to jump")
 
     def gameStart(self):
+        pygame.mixer.music.stop()
+        pygame.mixer.music.set_volume(0.25)
+        pygame.mixer.music.load('bruinsfight.mp3')
         self.label.hide()
         self.toolButton_2.hide()
         for b in self.buildings:
@@ -191,15 +199,20 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.score = 0
         self.label_2.setText(str(self.score))
         self.active = True
+        pygame.mixer.music.play(loops = -1)
         self.timer.start(10)
     
     def gameEnd(self):
         self.timer.stop()
+        pygame.mixer.music.stop()
+        pygame.mixer.music.set_volume(1)
+        pygame.mixer.music.load('intro.mp3')
         self.label.setText("Game Over")
         self.label.show()
         self.toolButton_2.show()
         self.toolButton_2.setText("Restart")
         self.active = False
+        pygame.mixer.music.play(loops = -1)
 
     def framePress(self,event):
         print event.x(), event.y()
@@ -220,10 +233,10 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         else:
             self.focus = True
         if self.active:
+            painter.drawImage(5,5,self.graphic.scaled(self.frame.geometry().width()-10,self.frame.geometry().height()-10))
             for b in self.buildings:
                 b.paintBuilding(painter)
             self.player.paintBruin(painter)
-            
     
     def eventFilter(self,source,event):
         if event.type() == QtCore.QEvent.HoverMove:
@@ -241,6 +254,8 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
             self.label_4.setText(str(self.highscore))
 
     def quitgame(self):
+        pygame.mixer.music.stop()
+        pygame.mixer.stop()
         self.timer.stop()
         self.close()
     
