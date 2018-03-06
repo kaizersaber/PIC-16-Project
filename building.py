@@ -19,7 +19,6 @@ class Building(object):
         self.ub = 4
         self.reset()
         self.y = 4
-        self.img_building = QtGui.QImage("building0.png")
         self.img_window = QtGui.QImage("inner1.png")
         self.img_lobby = QtGui.QImage("inner0.png")
         self.img_block = QtGui.QImage("upper0.png")
