@@ -12,17 +12,18 @@ class Building(object):
     def __init__(self, frame):
         self.index = Building.count
         Building.count = Building.count + 1
+        self.gapIndex = 0
+        self.numBlocks = 3
         self.scaleFactor = 10.0
         self.frame = frame
         self.ub = 4
-        self.resize()
-        self.x = self.start_x
+        self.reset()
         self.y = 4
-        self.randomizeGap()
-        self.setUML()
         self.img_building = QtGui.QImage("building0.png")
         self.img_window = QtGui.QImage("inner1.png")
         self.img_lobby = QtGui.QImage("inner0.png")
+        self.img_block = QtGui.QImage("upper0.png")
+        self.img_door = QtGui.QImage("lower0.png")
         
     def w(self):
         return self.frame.geometry().width()
@@ -34,8 +35,12 @@ class Building(object):
         return self.ub + self.h() - 2*4
 
     def randomizeGap(self):
-        self.gapIndex = random.randint(0,3)
-        self.gapHeight = self.gapIndex*(self.h()-10)/4.0
+        adj = 0
+        if self.gapIndex == 1 & self.numBlocks == 5:
+            adj = -1
+        self.gapIndex = random.randint(1,self.numBlocks+adj)
+        self.collision_ub = self.upper_y[self.gapIndex]
+        self.collision_lb = self.upper_y[self.gapIndex-1]
     
     def update(self):
         self.x += self.vx/self.scaleFactor
@@ -45,43 +50,47 @@ class Building(object):
     
     def setDiff(self, mode):
         if mode == "Easy":
-            self.scaleFactor = 10.0
+            self.scaleFactor = 6.0
+            self.numBlocks = 3
         elif mode == "Medium":
-            self.scaleFactor = 8.0
+            self.scaleFactor = 6.0
+            self.numBlocks = 4
         elif mode == "Hard":
             self.scaleFactor = 6.0
-    
-    def setUML(self):
-        self.upper_x = self.x
-        self.upper_y = self.y
-        self.upper_h = self.gapHeight
-        self.middle_x = self.x
-        self.middle_y = self.gapHeight + self.y
-        self.middle_h = self.gapSize
-        self.lower_x = self.x
-        self.lower_y = self.y + self.gapHeight + self.gapSize
-        self.lower_h = self.lb() - self.lower_y
+            self.numBlocks = 5
     
     def paintBuilding(self, painter):
-        self.setUML()
-        painter.drawImage(self.upper_x, self.upper_y, self.img_building.scaled(self.width,self.lb()-self.ub),
-                          sx = 0, sy = 0, sw = -1, sh = -1)
-        if self.gapIndex < 3:
-            painter.drawImage(self.middle_x, self.middle_y, self.img_window.scaled(self.width,self.middle_h),
-                              sx = 0, sy = 0, sw = -1, sh = -1)
+        for i in range(1,self.numBlocks+1):
+            self.paintBlock(painter,i)
+    
+    def paintBlock(self, painter, i):
+        img = None
+        adj = 1
+        if i == 1:
+            if i == self.gapIndex: 
+                adj = 1.01
+                img = self.img_lobby
+            else:
+                adj = 1.01
+                img = self.img_door
         else:
-            painter.drawImage(self.middle_x, self.middle_y, self.img_lobby.scaled(self.width,self.middle_h+2),
-                              sx = 0, sy = 0, sw = -1, sh = -1)
-         
+            if i == self.gapIndex:
+                img = self.img_window
+            else:
+                adj = 1.01
+                img = self.img_block
+        painter.drawImage(self.x, self.upper_y[i], img.scaled(self.width,self.blockSize*adj),
+                          sx = 0, sy = 0, sw = 0, sh = 0)
     
     def resize(self):
-        self.gapSize = (self.h()-2*5)/4
-        self.width = self.w()/(2.5*(Building.count+1))
+        self.blockSize = (self.h()-8)/self.numBlocks
+        self.upper_y = [self.ub + self.blockSize*i for i in range(self.numBlocks,-1,-1)]
+        self.width = self.w()/(2*(Building.count+1))
         self.interval = (self.w() + self.width)/Building.count
         self.start_x = self.w() + self.index*self.interval
-        self.vx = -0.015*self.w()
+        self.vx = -self.w()/100
         
-    def resetPos(self):
+    def reset(self):
         self.resize()
         self.x = self.start_x
         self.randomizeGap()

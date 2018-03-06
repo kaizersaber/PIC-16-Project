@@ -35,7 +35,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
     def setupUi(self):
         # Layouts
         self.setObjectName("MainWindow")
-        self.resize(1000, 715)
+        self.resize(1600, 900)
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -194,7 +194,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.label.hide()
         self.toolButton_2.hide()
         for b in self.buildings:
-            b.resetPos()
+            b.reset()
         self.player.reset()
         self.score = 0
         self.label_2.setText(str(self.score))

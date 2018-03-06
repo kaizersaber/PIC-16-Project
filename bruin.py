@@ -11,6 +11,7 @@ import pygame
 class Bruin(object):
     def __init__(self, frame):
         self.scaleFactor = 10.0
+        self.scoreFactor = 1
         self.frame = frame
         self.ub = 5
         self.reset()
@@ -34,7 +35,7 @@ class Bruin(object):
         self.x, self.y = self.w()/4, self.h()/2 + self.ub
         self.vx, self.vy = 0,0
         self.ay = 0.015*self.h()
-        self.size = self.h()/20
+        self.size = self.h()/20 - 1
         self.dead = False
         self.inBuilding = False
         self.score = 0
@@ -43,23 +44,26 @@ class Bruin(object):
     def buildingCheck(self, bool):
         if self.inBuilding:
             if not bool:
-                self.score += 1
+                self.score += 1*self.scoreFactor
         self.inBuilding = bool
     
     # setDiff sets the difficulty factors based on mode
     def setDiff(self, mode):
         if mode == "Easy":
             self.scaleFactor = 10.0
+            self.scoreFactor = 1
         elif mode == "Medium":
             self.scaleFactor = 9.0
+            self.scoreFactor = 2
         elif mode == "Hard":
             self.scaleFactor = 8.0
+            self.scoreFactor = 3
     
     # jump increases upward velocity of player and plays sound
     def jump(self):
         pygame.mixer.Channel(0).stop()
         pygame.mixer.Channel(0).play(self.jumpSound)
-        self.vy = -(self.h()-2*5)/16 - (10 - self.scaleFactor)
+        self.vy = -(self.h()-2*5)/20 - (10 - self.scaleFactor)
     
     # update updates the current position and checks for collisions
     def update(self, buildings):
@@ -68,8 +72,8 @@ class Bruin(object):
         
         buildingChecks = []
         for b in buildings:
-            if (b.x <= self.x + self.size/2 - 1) & (self.x - self.size/2 + 1 <= b.x + b.width):
-                if (b.middle_y >= self.y - self.size/2 - 5) | (self.y + self.size/2 - 1 >= b.lower_y):
+            if (b.x <= self.x + self.size/2 - 2) & (self.x - self.size/2 + 2 <= b.x + b.width):
+                if (b.collision_ub >= self.y - self.size/2 - 5) | (self.y + self.size/2 - 1 >= b.collision_lb):
                     self.dead = True
                 else:
                     buildingChecks.append(True)
