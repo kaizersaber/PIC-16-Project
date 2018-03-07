@@ -36,6 +36,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         # Layouts
         self.setObjectName("MainWindow")
         self.resize(1600, 900)
+        self.setFixedSize(1600, 900)
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -183,9 +184,6 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.player.setDiff(mode)
         for b in self.buildings:
             b.setDiff(mode)
-    
-    def displayRules(self):
-        self.label.setText("Press W to jump")
 
     def gameStart(self):
         pygame.mixer.music.stop()
@@ -193,6 +191,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         pygame.mixer.music.load('bruinsfight.mp3')
         self.label.hide()
         self.toolButton_2.hide()
+        self.comboBox.setEnabled(False)
         for b in self.buildings:
             b.reset()
         self.player.reset()
@@ -212,6 +211,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.toolButton_2.show()
         self.toolButton_2.setText("Restart")
         self.active = False
+        self.comboBox.setEnabled(True)
         pygame.mixer.music.play(loops = -1)
 
     def framePress(self,event):
