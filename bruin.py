@@ -67,8 +67,10 @@ class Bruin(object):
     
     # update updates the current position and checks for collisions
     def update(self, buildings):
-        if (self.y + self.size/2 > self.lb()) | (self.y - self.size/2 < self.ub):
-            self.dead = True
+        if self.y > self.lb():
+            self.y = self.ub + self.size/2
+        if self.y < self.ub:
+            self.y = self.lb() - self.size/2
         
         buildingChecks = []
         for b in buildings:

@@ -35,8 +35,6 @@ class Building(object):
 
     def randomizeGap(self):
         adj = 0
-        if self.gapIndex == 1 & self.numBlocks == 5:
-            adj = -1
         self.gapIndex = random.randint(1,self.numBlocks+adj)
         self.collision_ub = self.upper_y[self.gapIndex]
         self.collision_lb = self.upper_y[self.gapIndex-1]

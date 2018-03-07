@@ -224,7 +224,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
             
     def framePaint(self, event):
         if self.buildings == None:
-            self.buildings = [Building(self.frame) for x in range(3)]
+            self.buildings = [Building(self.frame) for x in range(4)]
         if self.player == None:
             self.player = Bruin(self.frame)
         painter = QtGui.QPainter(self.frame)
