@@ -9,6 +9,7 @@ import random
 
 class Building(object):
     count = 0
+    prevGapIndex = 0
     def __init__(self, frame):
         self.index = Building.count
         Building.count = Building.count + 1
@@ -35,7 +36,10 @@ class Building(object):
 
     def randomizeGap(self):
         adj = 0
+        if (Building.prevGapIndex == 1) & (self.numBlocks == 5):
+            adj = -1
         self.gapIndex = random.randint(1,self.numBlocks+adj)
+        Building.prevGapIndex = self.gapIndex
         self.collision_ub = self.upper_y[self.gapIndex]
         self.collision_lb = self.upper_y[self.gapIndex-1]
     
