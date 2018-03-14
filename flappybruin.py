@@ -1,42 +1,56 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'newflappy.ui'
-#
-# Created by: PyQt5 UI code generator 5.6
-#
-# WARNING! All changes made in this file will be lost!
-
+# Imports necessary files
 import sys
-from PyQt5 import QtCore, QtGui, QtWidgets, QtMultimedia
+from PyQt5 import QtCore, QtGui, QtWidgets
 from bruin import Bruin
 from building import Building
 import pygame
 
+# FlappyBruinGame implements the interface for our gane
 class FlappyBruinGame(QtWidgets.QMainWindow):
+    # Initializer
     def __init__(self):
+        # Initializes the main window component
         super(FlappyBruinGame, self).__init__()
+        # Creates QTimer and connects it to animate function
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.animate)
+        # Creates instance variables
+        # active: used to track whether game is active
+        # focus: used to track whether mouse is currently over the game
+        # highscore: used to track high score
+        # score: used to track current score
         self.active = False
         self.focus = True
         self.highscore, self.score = 0,0
+        # Sets up all GUI elements of the game
         self.setupUi()
+        # Initializers player and building to None at first
         self.player = None
         self.buildings = None
+        # Stores background image from file
         self.graphic = QtGui.QImage("lasky.png")
+        # Sets up audio
         self.setupAudio()
     
+    # setupAudio sets up audio for the game
     def setupAudio(self):
+        # Initializes mixer object
         pygame.mixer.init()
+        # Loads menu music into the mixer
         pygame.mixer.music.load('intro.mp3')
+        # Sets volume to 1
         pygame.mixer.music.set_volume(1)
+        # Makes music loop repeatedly
         pygame.mixer.music.play(loops = -1)
     
+    # setupUI sets up GUI elements for the game
     def setupUi(self):
-        # Layouts
+        # Main Windows sizing
         self.setObjectName("MainWindow")
         self.resize(1600, 900)
         self.setFixedSize(1600, 900)
+        
+        # Central Widget Layout
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -177,68 +191,100 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.setCentralWidget(self.centralwidget)
 
         QtCore.QMetaObject.connectSlotsByName(self)
-        
+    
+    # setMode implements setting of difficulty
     def setMode(self):
+        # Gets current mode from comboBox
         mode = self.comboBox.currentText()
+        # Sets focus back to self
         self.focus = True
+        # Sets difficulty on the player and buildings
         self.player.setDiff(mode)
         for b in self.buildings:
             b.setDiff(mode)
 
+    # gameStart implements starting the game
     def gameStart(self):
+        # Stops current music and loads active game music
         pygame.mixer.music.stop()
         pygame.mixer.music.set_volume(0.25)
         pygame.mixer.music.load('bruinsfight.mp3')
+        # Hides center label, button and disables comboBox
         self.label.hide()
         self.toolButton_2.hide()
         self.comboBox.setEnabled(False)
+        # Resets positions of buildings and player
         for b in self.buildings:
             b.reset()
         self.player.reset()
+        # Resets current score to 0
         self.score = 0
+        # Updates score label text to current score
         self.label_2.setText(str(self.score))
+        # Updates active to True
         self.active = True
+        # Plays active game music with repeated loop
         pygame.mixer.music.play(loops = -1)
+        # Starts timer that calls animate every 10ms
         self.timer.start(10)
     
+    # gameEnd implements ending the ggame
     def gameEnd(self):
+        # Stops the timer
         self.timer.stop()
+        # Stops the active game music and loads menu music
         pygame.mixer.music.stop()
         pygame.mixer.music.set_volume(1)
         pygame.mixer.music.load('intro.mp3')
+        # Displays Game Over and Restart button
         self.label.setText("Game Over")
         self.label.show()
         self.toolButton_2.show()
         self.toolButton_2.setText("Restart")
+        # Sets active to False
         self.active = False
+        # Reactivates the comboBox
         self.comboBox.setEnabled(True)
+        # Plays music on repeated loop
         pygame.mixer.music.play(loops = -1)
-
+    
+    # framePress returns the current position of the cursor on click
     def framePress(self,event):
         print event.x(), event.y()
     
+    # keyPressEvent implements jumping action for player
     def keyPressEvent(self, event):
+        # Checks if the game is active
         if self.active:
+            # If W is pressed, makes the player jump
             if event.key() == QtCore.Qt.Key_W:
                 self.player.jump()
-            
+    
+    # framePaint is used to paint the player and buildings
     def framePaint(self, event):
+        # When called for the first time, instantiates player and 3 buildings
         if self.buildings == None:
             self.buildings = [Building(self.frame) for x in range(3)]
         if self.player == None:
             self.player = Bruin(self.frame)
+        # Constructs painter for the central frame
         painter = QtGui.QPainter(self.frame)
+        # Sets focus on self whenever focus is True
         if self.focus:
             self.setFocus()
         else:
             self.focus = True
+        # If active, calls paintBuilding and paintBruin functions
         if self.active:
             painter.drawImage(5,5,self.graphic.scaled(self.frame.geometry().width()-10,self.frame.geometry().height()-10))
             for b in self.buildings:
                 b.paintBuilding(painter)
             self.player.paintBruin(painter)
     
+    # eventFilter is used to reset focus from the comboBox to the frame and vice-versa
     def eventFilter(self,source,event):
+        # If the mouse is hovering over comboBox, sets focus to comboBox
+        # Otherwise, sets focus to self.
         if event.type() == QtCore.QEvent.HoverMove:
             if self.comboBox.underMouse():
                 self.comboBox.setFocus()
@@ -246,29 +292,41 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
             else:
                 self.focus = True
     
+    # updateSCore is used to update the score labels
     def updateScore(self):
+        # Updates current score and its label
         self.score = self.player.score
         self.label_2.setText(str(self.score))
+        # If current score exceeds high score, update high score as well
         if self.score > self.highscore:
             self.highscore = self.score
             self.label_4.setText(str(self.highscore))
-
+        
+    # quitgame is used to safely exit the game
     def quitgame(self):
+        # Stops music
         pygame.mixer.music.stop()
         pygame.mixer.stop()
+        # Stops timer
         self.timer.stop()
+        # Closes the window
         self.close()
     
+    # animate is used to update the elements of the game constantly
     def animate(self):
+        # Calls update functions for player, frame and buildings
         self.player.update(self.buildings)
         self.frame.update()
         for b in self.buildings:
             b.update()
+        # If player is dead, ends the game
+        # Otherwise, updates the score
         if self.player.dead:
             self.gameEnd()
         else:
             self.updateScore()
 
+# Main function starts the GUI
 def main():
     app = QtWidgets.QApplication.instance()
     if not app:
@@ -277,5 +335,6 @@ def main():
     ui.show()
     sys.exit(app.exec_())
 
+# Runs the main function
 if __name__ == "__main__":
     main()
