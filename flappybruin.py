@@ -102,8 +102,8 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
     def setupUi(self):
         # Main Windows sizing
         self.setObjectName("MainWindow")
-        self.resize(1600, 900)
-        self.setFixedSize(1600, 900)
+        self.resize(1280, 720)
+        self.setFixedSize(1280, 720)
         
         # Central Widget Layout
         self.centralwidget = QtWidgets.QWidget(self)

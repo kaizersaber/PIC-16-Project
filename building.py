@@ -16,10 +16,12 @@ class Building(object):
         lower0.png: Door image used in __init__()
     
     Attributes:
+        
+    Class Level:
+    count: Counts the number of building objects instantiated
+    prevGapIndex: Tracks previous gapIndex, used in randomizeGap()
+    
     Set by __init__():
-        count: Global class variable that represents the number of building 
-                objects called. Import to insure ratio of gaps between buildings is
-                able to be resized (see self.interval in resize()).
         index: The building objects index value within a set of building objects
         gapIndex: Where the gap to pass through a building will be placed
         numBlocks: Number of floors a building has changes with game difficulty
@@ -27,7 +29,7 @@ class Building(object):
         frame: The current QFrame
         upper_half: Represent the starting block of the upper_half of the
                     building, with the gap as the divider.
-        y: y cordinate of the building
+        ub: Upper bound for y-coordinate of building
         img_window: Any but the first floor, this is a block the player can 
                     pass through.
         img_lobby: The first floor image that can be passed through by the 
@@ -64,17 +66,17 @@ class Building(object):
         reset(): Calls resize(), resets position and calls randomizeGap()
     """
     count = 0
+    prevGapIndex = 0
     # Initializer
     def __init__(self, frame):
         self.index = Building.count
         Building.count = Building.count + 1
         self.gapIndex = 0
         self.numBlocks = 3
-        self.scaleFactor = 6.0
+        self.scaleFactor = 100.0
         self.frame = frame
         self.ub = 4
         self.reset()
-        self.y = 4
         self.img_window = QtGui.QImage("inner1.png")
         self.img_lobby = QtGui.QImage("inner0.png")
         self.img_block = QtGui.QImage("upper0.png")
@@ -90,13 +92,19 @@ class Building(object):
 
     # randomizeGap() generates a random value for gapIndex
     def randomizeGap(self):
-        self.gapIndex = random.randint(1,self.numBlocks)
+        adj = 0
+        # If previous gap was 1 in hard mode, restrict new gap to < 5
+        if (self.numBlocks == 5) & (Building.prevGapIndex == 1):
+            adj = -1
+        self.gapIndex = random.randint(1,self.numBlocks+adj)
+        Building.prevGapIndex = self.gapIndex
         # Sets values for bruin class to detect collision bounds of building
         self.collision_ub = self.upper_y[self.gapIndex]
         self.collision_lb = self.upper_y[self.gapIndex-1]
     
     # update() reinitializes the building whenever necessary
     def update(self):
+        print self.vx
         self.x += self.vx/self.scaleFactor
         if self.x < -self.width:
             self.x = self.frame_width()
@@ -139,12 +147,12 @@ class Building(object):
     
     # resize() resets building coordinates to paint
     def resize(self):
-        self.blockSize = (self.frame_height()-8)/self.numBlocks
+        self.blockSize = int(round((self.frame_height()-8)/float(self.numBlocks)))
         self.upper_y = [self.ub + self.blockSize*i for i in range(self.numBlocks,-1,-1)]
         self.width = self.frame_width()/(2*(Building.count+1))
         self.interval = (self.frame_width() + self.width)/Building.count
         self.start_x = self.frame_width() + self.index*self.interval
-        self.vx = -self.frame_width()/100
+        self.vx = -(self.frame_width()/100)**2
     
     # reset() calls resize(), resets position and calls randomizeGap()
     def reset(self):
