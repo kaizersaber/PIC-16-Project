@@ -1,49 +1,55 @@
-# Import necessary Files
-from PyQt5 import QtCore, QtGui, QtWidgets, QtMultimedia
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Feb 27 21:29:18 2018
+
+@author: Tan
+"""
+# Import necessary files
+from PyQt5 import QtGui
 import pygame
 
 # Bruin class creates and updates the score, position of Bruin Player
 class Bruin(object):
-    '''
-        This class draws and animates the character Joe the Bruin.
+    """
+    This class draws and animates the character Joe the Bruin.
 
-        Dependancies:
-            Joe_Bruin.png:  paints the character you play
-            jump.oog:       sound associated with a jump / pressing 'W'
+    Dependancies:
+        Joe_Bruin.png:      paints the character you play
+        jump.ogg:           sound associated with a jump / pressing 'W'
 
-        Attributes:
-            Set by __init___():
-                scaleFactor:    Scale physics of game play depending on difficulty
-                scoreFactor:    Store the player's score
-                frame:          Screen Frame
-                ub:             Upper Boundary for the playing screen
-                jumpSound:      Plays the jumping sound
-                graphic:        Reads in image of character to later bind to the player
+    Attributes:
+        Set by __init___():
+            scaleFactor:    Scale physics of game play depending on difficulty
+            scoreFactor:    Score increments
+            frame:          Screen Frame
+            ub:             Upper boundary for the player             
+            jumpSound:      Plays the jumping sound
+            graphic:        Graphic for player
             
-            Set by reset():
-                x:              Resets x position at 1/4 the width length
-                y:              Resets y position at 1/2 the height length
-                vx:             Resets horizantal velocity
-                vy:             Resets verticle velocity
-                ay:             Applies acceleration at the rate of 0.015 unites of the frame's height
-                size:           Sets the size of the character at about 1/20th of the height of the frame
-                dead:           Resets boolean death status to False
-                inBuilding:     Resets boolean touching the building status to False
-                score:          Resets score to 0
-
-        Functions:
-            __init__():         Initializer
-            w():                Returns frame width
-            h():                Returns frame height
-            lb():               Returns lower bound of playing screen
-            reset():            Resets the game to a new game. Keeps High Score
-            buildingCheck():    Checks whether or not player is in a building column and then checks whether or not it has hit the building
-                                    if it has not hit the building, then it adds a scoreFactor to the score once it exits the building
-            setDiff():          Sets scaleFactor and scoreFactor depending on the difficulty setting
-            jump():             Implements the jump sound as it adjusts the verticle velocity to simulate a jump
-            update():           Updates the current position, velocity, and checks for collisions. If collision occured, changes dead to True.
-            paintBruin():       Binds the image of Joe the bruin to the character positon
-    '''
+        Set by reset():
+            x:              x position of player
+            y:              y position of player                
+            vx:             Horizontal velocity
+            vy:             Vertical velocity
+            ay:             Applies acceleration at the rate of 0.015x frame height
+            size:           Sets the size of the character at about 1/20th of frame height
+            dead:           Death status initialized to False
+            inBuilding:     Inside building status initialized to False
+            score:          Score of player
+    Functions:
+        __init__():         Initializer
+        w():                Returns frame width
+        h():                Returns frame height
+        lb():               Returns lower bound of playing screen
+        reset():            Resets the game to a new game. Preserves high score
+        buildingCheck():    Checks if player has hit the building
+                            If it has not hit the building, then updates score
+        setDiff():          Sets scaleFactor and scoreFactor depending on the difficulty setting
+        jump():             Implements the jump sound as it adjusts the y-velocity to simulate a jump
+        update():           Updates the current position, velocity, and checks for collisions. 
+                            If collision occured, changes dead to True.
+        paintBruin():       Binds the image of Joe the bruin to the character positon
+    """
     def __init__(self, frame):
         self.scaleFactor = 10.0
         self.scoreFactor = 1
@@ -122,7 +128,7 @@ class Bruin(object):
         
         self.vy += self.ay / self.scaleFactor
         self.x += self.vx / self.scaleFactor
-        self.y += self.vy / self.scaleFactor
+        self.y += self.vy /self.scaleFactor
     
     # paintBruin defines how to paint the player
     def paintBruin(self,painter):

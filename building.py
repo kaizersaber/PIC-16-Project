@@ -130,10 +130,10 @@ class Building(object):
         adj = 1
         if floor == 1:
             if floor == self.gapIndex: 
-                adj = 1.01
+                adj = 1.015
                 img = self.img_lobby
             else:
-                adj = 1.01
+                adj = 1.015
                 img = self.img_door
         else:
             if floor == self.gapIndex:

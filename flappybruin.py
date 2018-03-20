@@ -17,36 +17,36 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         bruinsfight.mp3: Game music used in gameStart
     
     Attributes:
-    Set by __init__():
-        timer: QTimer used to call animate every 10ms
-        focus: Tracks event focus, see eventFilter() for details
-        highscore: Tracks current high score
-        score: Tracks current score
-        player: Stores Bruin object
-        buildings: Stores list of Building objects
-        graphic: Stores the background QImage
+        Set by __init__():
+            timer: QTimer used to call animate every 10ms
+            focus: Tracks event focus, see eventFilter() for details
+            highscore: Tracks current high score
+            score: Tracks current score
+            player: Stores Bruin object
+            buildings: Stores list of Building objects
+            graphic: Stores the background QImage
         
-    Set by setupUI():
-        centralwidget: Central widget
-        gridLayout: Grid layout on central widget
-        widget: Base widget on central widget
-        widget_2: Top widget panel
-        widget_4: Bottom widget panel
-        frame: Central frame
-        verticalLayout: Vertical layout on base widget
-        verticalLayout2: Vertical layout on frame
-        horizontalLayout: Horizontal layout on top panel widget
-        horizontalLayout_2: Horizontal layout on bottom panel widget
-        label: Center text
-        label_2: Current score value
-        label_3: Current score text
-        label_4: High score value
-        label_5: Difficulty text
-        label_6: High score text
-        label_7: Instructions text
-        toolButton_2: Start Game button
-        toolButton_3: Quit Game Button
-        comboBox: Difficulty selector
+        Set by setupUI():
+            centralwidget: Central widget
+            gridLayout: Grid layout on central widget
+            widget: Base widget on central widget
+            widget_2: Top widget panel
+            widget_4: Bottom widget panel
+            frame: Central frame
+            verticalLayout: Vertical layout on base widget
+            verticalLayout2: Vertical layout on frame
+            horizontalLayout: Horizontal layout on top panel widget
+            horizontalLayout_2: Horizontal layout on bottom panel widget
+            label: Center text
+            label_2: Current score value
+            label_3: Current score text
+            label_4: High score value
+            label_5: Difficulty text
+            label_6: High score text
+            label_7: Instructions text
+            toolButton_2: Start Game button
+            toolButton_3: Quit Game Button
+            comboBox: Difficulty selector
     
     Functions:
         __init__(): Main initializer
@@ -104,6 +104,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         # Main Windows sizing
         self.setObjectName("MainWindow")
         self.resize(1280, 720)
+        self.setMinimumSize(1024,576)
         # Disables close button on main window
         self.setWindowFlags(QtCore.Qt.WindowMinimizeButtonHint|
                 QtCore.Qt.WindowMaximizeButtonHint)
