@@ -86,6 +86,7 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.graphic = QtGui.QImage("lasky.png")
         # Sets up audio
         self.setupAudio()
+        # Displays only close button for window
     
     # setupAudio() sets up audio for the game
     def setupAudio(self):
@@ -103,7 +104,9 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         # Main Windows sizing
         self.setObjectName("MainWindow")
         self.resize(1280, 720)
-        self.setFixedSize(1280, 720)
+        # Disables close button on main window
+        self.setWindowFlags(QtCore.Qt.WindowMinimizeButtonHint|
+                QtCore.Qt.WindowMaximizeButtonHint)
         
         # Central Widget Layout
         self.centralwidget = QtWidgets.QWidget(self)
@@ -267,6 +270,10 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.label.hide()
         self.toolButton_2.hide()
         self.comboBox.setEnabled(False)
+        # Prevents resizing of main window
+        self.setFixedSize(self.size())
+        self.setWindowFlags(QtCore.Qt.WindowMinimizeButtonHint)
+        self.show()
         # Resets positions of buildings and player
         for b in self.buildings:
             b.reset()
@@ -299,6 +306,12 @@ class FlappyBruinGame(QtWidgets.QMainWindow):
         self.active = False
         # Reactivates the comboBox
         self.comboBox.setEnabled(True)
+        # ALlows resizing of the main window
+        self.setMaximumSize(QtWidgets.QWIDGETSIZE_MAX,QtWidgets.QWIDGETSIZE_MAX)
+        self.setMinimumSize(1024,576)
+        self.setWindowFlags(QtCore.Qt.WindowMinimizeButtonHint|
+                QtCore.Qt.WindowMaximizeButtonHint)
+        self.show()
         # Plays music on repeated loop
         pygame.mixer.music.play(loops = -1)
 

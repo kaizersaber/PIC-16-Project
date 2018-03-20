@@ -104,7 +104,6 @@ class Building(object):
     
     # update() reinitializes the building whenever necessary
     def update(self):
-        print self.vx
         self.x += self.vx/self.scaleFactor
         if self.x < -self.width:
             self.x = self.frame_width()
